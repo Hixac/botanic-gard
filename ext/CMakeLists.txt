@@ -1,5 +1,6 @@
 
 add_library(imgui STATIC
+  stb_image.h
   imconfig.h
   imgui.cpp
   imgui.h

@@ -1,19 +1,42 @@
 #include <window.hpp>
 
-#include <imgui.h>
+#include <frame.hpp>
+#include <image.hpp>
+#include <filedialog.hpp>
 
 int main(void)
 {
 	Window::Window win("Фруктовый сад", 640, 480);
 
-	win.OnUpdateCallBack([]() {
-		
-		if (ImGui::Begin("Win")) {
+	Utils::ImageTexture image;
+	
+	MyGui::Frame image_render("ImageRender", win.GetVec(), {140, 0});
+	MyGui::Frame marker("Marker", {win.GetVec().x - (640 - 500), win.GetVec().y }, {0, 0});
+	
+	marker.SetFunction([&](){
 
-			ImGui::Text("Check");
+		if (ImGui::Button("Открыть фото")) {
+			auto path = Utils::FileDialog::Get().Open();
 
-			ImGui::End();
+			if (path.err == Utils::FileDialog::None) {
+				image.CreateTexture(path.out.get());
+			} else {
+				
+			}
 		}
+		
+	});
+			
+	image_render.SetFunction([&](){
+
+		ImGui::Image((void*)(intptr_t)image.GetTextureData(), image.GetVec());
+			
+	});
+	
+	win.OnUpdateCallBack([&]() {
+		
+		marker.Update();
+		image_render.Update();
 		
 	});
 	

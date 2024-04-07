@@ -1,4 +1,4 @@
-#include "glfw3.h"
+
 #include <window.hpp>
 
 #include <imgui.h>
@@ -17,7 +17,7 @@ namespace Window {
 		}
 		glfwSetErrorCallback(Window::ErrorCallBack);
 		
-		m_pwindow = glfwCreateWindow(m_height, m_width, name.c_str(), NULL, NULL);
+		m_pwindow = glfwCreateWindow(m_width, m_height, name.c_str(), NULL, NULL);
 		if (!m_pwindow) { // Окно не создалось
 			glfwTerminate();
 		}
@@ -30,6 +30,8 @@ namespace Window {
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO();
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controlss
+
+		io.Fonts->AddFontFromFileTTF("JetBrainsMonoNLNerdFontMono-Regular.ttf", 23, nullptr, io.Fonts->GetGlyphRangesCyrillic());
 		
 		ImGui::StyleColorsDark();
 	    ImGui_ImplGlfw_InitForOpenGL(m_pwindow, true);
@@ -45,7 +47,7 @@ namespace Window {
 		glfwTerminate();
 	}
 
-    void Window::OnUpdateCallBack(std::function<void()> fn)
+    void Window::OnUpdateCallBack(std::function<void()> mainupdatefn)
 	{
 	    while (!glfwWindowShouldClose(m_pwindow))
 		{
@@ -53,9 +55,13 @@ namespace Window {
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplGlfw_NewFrame();
 			ImGui::NewFrame();
-	    
-			fn();
 
+			mainupdatefn();
+			
+			for (const auto& fn : updatefns) {
+				fn();
+			}
+			
 		    glClear(GL_COLOR_BUFFER_BIT);
 			
 			ImGui::Render();
