@@ -19,7 +19,7 @@ namespace Utils {
 		else if (res == NFD_CANCEL)
 			err = FileDialog::FileDidntOpened;
 			
-		return { NFD::UniquePathU8(path), err };
+		return { path, err };
 	}
 	
 }

@@ -8,7 +8,7 @@ namespace Utils {
 		enum Error { None, FileDidntOpened };
 		
 		struct Path {
-			NFD::UniquePathU8 out;
+		    nfdu8char_t* out;
 			Error err;
 		};
 		

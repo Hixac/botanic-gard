@@ -10,32 +10,52 @@ int main(void)
 
 	Utils::ImageTexture image;
 	
-	MyGui::Frame image_render("ImageRender", win.GetVec(), {140, 0});
-	MyGui::Frame marker("Marker", {win.GetVec().x - (640 - 500), win.GetVec().y }, {0, 0});
+	MyGui::Frame image_render("ImageRender", win.GetVec(), {0, 0}, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_MenuBar);
+	// MyGui::Frame marker("Marker", {win.GetVec().x / 5, win.GetVec().y }, {0, 0}, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
 	
-	marker.SetFunction([&](){
+	// marker.SetFunction([&](){
 
-		if (ImGui::Button("Открыть фото")) {
-			auto path = Utils::FileDialog::Get().Open();
-
-			if (path.err == Utils::FileDialog::None) {
-				image.CreateTexture(path.out.get());
-			} else {
-				
-			}
-		}
+	// 	marker.SetSize({ win.GetVec().x / 4, win.GetVec().y });
 		
-	});
+	// 	if (ImGui::Button("Открыть фото")) {
+	// 		auto path = Utils::FileDialog::Get().Open();
+
+	// 		if (path.err == Utils::FileDialog::None) {
+	// 			image.CreateTexture(path.out);
+	// 		} else {
+	// 			// TODO: MAKE NOTIFY
+	// 		}
+	// 	}
+		
+	// });
 			
 	image_render.SetFunction([&](){
 
-		ImGui::Image((void*)(intptr_t)image.GetTextureData(), image.GetVec());
+		image_render.SetSize(win.GetVec());
+		// image_render.SetPos({win.GetVec().x / 4, 0});
+
+		if (ImGui::BeginMenuBar()) {
+			if (ImGui::MenuItem("Открыть фото")) {
+				auto path = Utils::FileDialog::Get().Open();
+
+				if (path.err == Utils::FileDialog::None) {
+					image.CreateTexture(path.out);
+				} else {
+					// TODO: MAKE NOTIFY
+				}
+			}
+			ImGui::Separator();
+			
+			ImGui::EndMenuBar();
+		}
+		
+		ImGui::Image((void*)(intptr_t)image.GetTextureData(), win.GetVec());
 			
 	});
 	
 	win.OnUpdateCallBack([&]() {
 		
-		marker.Update();
+		// marker.Update();
 		image_render.Update();
 		
 	});
@@ -43,6 +63,5 @@ int main(void)
 	return 0; // Программа закрыта без ошибок
 }
 
-// TODO: Image render class
 // TODO: Mark adder
 // TODO: Describer for mark

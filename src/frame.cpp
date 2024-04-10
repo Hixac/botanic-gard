@@ -10,7 +10,7 @@ namespace MyGui {
 	void Frame::Update()
 	{
 		ImGui::SetNextWindowSize(m_size);
-		if (ImGui::Begin(m_label)) {
+		if (ImGui::Begin(m_label, NULL, m_flags)) {
 			ImGui::SetWindowPos(m_pos);
 			
 			m_fn();

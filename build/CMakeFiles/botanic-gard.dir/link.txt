@@ -1,1 +1,0 @@
-/usr/bin/c++ -g "CMakeFiles/botanic-gard.dir/src/main.cpp.o" -o botanic-gard  src/libsrc.a ext/libimgui.a glfw/src/libglfw3.a /usr/lib/librt.a -lm -ldl /usr/lib/libGLX.so /usr/lib/libOpenGL.so
