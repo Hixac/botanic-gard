@@ -23,8 +23,16 @@ namespace Window {
 		ImVec2 GetVec() { return {static_cast<float>(m_width), static_cast<float>(m_height)}; }
 		
 		std::vector<std::function<void()>> updatefns;
+
+		inline static ImVec2 GetMousePosition() { return {static_cast<float>(m_xpos), static_cast<float>(m_ypos)}; }
+		inline static bool GetLeftMouseDown() { return ms_leftmousedown; }
 	private:
 		static void ErrorCallBack(int code, const char* descr);
+		static void ButtonCallBack(GLFWwindow* window, int button, int action, int mods);
+		static void MousePosCallBack(GLFWwindow* window, double xpos, double ypos);
+		
+		inline static bool ms_leftmousedown = false;
+		inline static double m_xpos, m_ypos;
 		
 		GLFWwindow* m_pwindow;
 		

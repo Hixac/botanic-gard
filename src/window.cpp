@@ -26,6 +26,9 @@ namespace Window {
 		glfwMakeContextCurrent(m_pwindow);
 		glfwSwapInterval(1); // vsync
 
+		glfwSetMouseButtonCallback(m_pwindow, Window::ButtonCallBack);
+		glfwSetCursorPosCallback(m_pwindow, Window::MousePosCallBack);
+		
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO();
@@ -69,6 +72,9 @@ namespace Window {
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 			glfwSwapBuffers(m_pwindow);
+
+			// CLEAR STUFF
+			ms_leftmousedown = false;
 		}
 	}
 
@@ -77,4 +83,15 @@ namespace Window {
 		assert(false && descr && "code is" && code);
 	}
 	
+	void Window::ButtonCallBack(GLFWwindow* window, int button, int action, int mods)
+	{
+		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+			ms_leftmousedown = true;
+		}
+	}
+	
+	void Window::MousePosCallBack(GLFWwindow* window, double xpos, double ypos)
+	{
+		m_xpos = xpos; m_ypos = ypos;
+	}
 }
