@@ -1,23 +1,26 @@
-
 #include <window.hpp>
 
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+#include <marble.hpp>
 
 #include <cassert>
 
 namespace Window {
 
 	Window::Window(std::string name, int width, int height)
-		: m_name(name), m_width(width), m_height(height)
-	{		
+		: m_name(name)
+	{
+		Window::Window::SetHeight(height);
+		Window::Window::SetWidth(width);
+
 		if (!glfwInit()) { // Может быть проблема с зависимостями
 			assert(false && "GLFW INITIALIZATION WENT WRONG BRUV");
 		}
 		glfwSetErrorCallback(Window::ErrorCallBack);
 		
-		m_pwindow = glfwCreateWindow(m_width, m_height, name.c_str(), NULL, NULL);
+		m_pwindow = glfwCreateWindow(ms_width, ms_height, name.c_str(), NULL, NULL);
 		if (!m_pwindow) { // Окно не создалось
 			glfwTerminate();
 		}
@@ -25,6 +28,7 @@ namespace Window {
 		// Сделать окно видимым поверх всех
 		glfwMakeContextCurrent(m_pwindow);
 		glfwSwapInterval(1); // vsync
+		glfwSetWindowSizeLimits(m_pwindow, 800, 800, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
 		glfwSetMouseButtonCallback(m_pwindow, Window::ButtonCallBack);
 		glfwSetCursorPosCallback(m_pwindow, Window::MousePosCallBack);
@@ -68,7 +72,7 @@ namespace Window {
 		    glClear(GL_COLOR_BUFFER_BIT);
 			
 			ImGui::Render();
-			glfwGetFramebufferSize(m_pwindow, &m_width, &m_height);
+			glfwGetFramebufferSize(m_pwindow, &ms_width, &ms_height);
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 			glfwSwapBuffers(m_pwindow);

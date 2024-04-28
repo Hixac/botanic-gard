@@ -1,46 +1,36 @@
 #pragma once
 
+#include <briefcase.hpp>
 #include <imgui.h>
 
-#include <functional>
+#include <memory>
 #include <string>
-#include <vector>
 
 namespace MyGui {
 	
 	class Mark
 	{
 	public:
-		Mark(std::string label, ImVec2 pos, std::function<void()> fn);
+		Mark(std::string label, ImVec2 pos);
 
 		void UpdateFun();
 	    bool Update();
 
 		inline bool IsHovered() { return m_isHovered; };
+		inline MyGui::BriefCase& GetBriefCase() { return *m_pbriefcase; }
 		
 	private:
+		
+		std::string name;
+		
 		bool m_isHovered;
 		
-		std::function<void()> m_fn;
+		std::unique_ptr<MyGui::BriefCase> m_pbriefcase;
 		
 		std::string m_label;
 		ImVec2 m_pos;
-	};
 
-	class MarkContainer
-	{
-	public:
-		MarkContainer() = default;
-
-		void Add(ImVec2 pos, std::function<void()> fn);
-		bool Any(Mark* mark = nullptr);
-
-		inline size_t GetSize() { return m_marks.size(); }
-		
-		inline std::vector<Mark>& operator()() { return m_marks; }
-		
-	private:
-		std::vector<Mark> m_marks;
+		ImVec2 m_oldres;
 	};
 	
 }

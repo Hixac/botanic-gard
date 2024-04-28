@@ -15,6 +15,8 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 # TODO: Make file adder into application
 FILE(COPY res/gard.jpg DESTINATION "${CMAKE_BINARY_DIR}")
 FILE(COPY res/gard.jpg DESTINATION "${CMAKE_BINARY_DIR}/Debug")
+FILE(COPY res/ass.jpg DESTINATION "${CMAKE_BINARY_DIR}/")
+FILE(COPY res/ass.jpg DESTINATION "${CMAKE_BINARY_DIR}/Debug")
 FILE(COPY res/JetBrainsMonoNLNerdFontMono-Regular.ttf DESTINATION "${CMAKE_BINARY_DIR}")
 FILE(COPY res/JetBrainsMonoNLNerdFontMono-Regular.ttf DESTINATION "${CMAKE_BINARY_DIR}/Debug")
 
