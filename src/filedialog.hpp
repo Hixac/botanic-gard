@@ -17,6 +17,7 @@ namespace Utils {
 		inline static FileDialog& Get() { static FileDialog dlg; return dlg; }
 
 		Path Open(nfdfilteritem_t filterItem = { "Photo", "jpg,png" });
+		Path Save(nfdfilteritem_t filterItem = {"", "info"});
 
 	private:
 		FileDialog();

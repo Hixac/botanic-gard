@@ -42,7 +42,14 @@ int main(void)
 			}
 			ImGui::Separator();
 			if (ImGui::MenuItem("Сохранить метки") && image.IsSetuped()) { // image.IsSetuped very important to use!
-				Utils::Marble::Get().SaveInfo(image.GetFilename(), marks);
+				auto path = Utils::FileDialog::Get().Save();
+
+				if (path.err == Utils::FileDialog::None) {
+					Utils::Marble::Get().SaveInfo(path.out, image.GetFilename(), marks);
+				}
+				else {
+					// TODO: MAKE NOTIFY
+				}
 			}
 			ImGui::Separator();
             // we load not only marks but also and a photo within one file!
@@ -51,7 +58,11 @@ int main(void)
 				auto path = Utils::FileDialog::Get().Open({"Информационная единица", "info"});
 
 				if (path.err == Utils::FileDialog::None) {
-					Utils::Marble::Get().LoadInfo(path.out);
+					std::string png_name;
+					marks = Utils::Marble::Get().LoadInfo(path.out, png_name);
+
+					image.SetupTexture(png_name.c_str());
+
 				} else {
 					// TODO: MAKE NOTIFY
 				}

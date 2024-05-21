@@ -13,6 +13,8 @@ namespace MyGui {
 		MarkContainer() = default;
 
 		void Add(ImVec2 pos);
+		void Add(std::string label, ImVec2 pos, std::string name, std::string filename, std::vector<MyGui::Info> vec_info);
+
 		bool Any(Mark* mark = nullptr);
 		
 		inline void Clear() { m_marks.clear(); }

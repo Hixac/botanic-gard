@@ -27,18 +27,20 @@ add_subdirectory(src/) # исходный код
 target_include_directories(src PUBLIC src/)
 target_link_libraries(${PROJECT_NAME} src)
 
+find_package(OpenGL REQUIRED)
+target_link_libraries(src PUBLIC OpenGL::GL)
+
 target_include_directories(src PUBLIC ext/)
 add_subdirectory(ext/)  # файлы с библиотекой imgui
-target_link_libraries(src imgui)
+target_link_libraries(src PUBLIC imgui)
 
 target_include_directories(src PUBLIC nativefiledialog-extended/)
-add_subdirectory(nativefiledialog-extended/)  # файлы с библиотекой imgui
-target_link_libraries(src nfd)
+add_subdirectory(nativefiledialog-extended/)
+target_link_libraries(src PUBLIC nfd)
 
 target_include_directories(${PROJECT_NAME} PUBLIC glfw/include/GLFW/)
 target_include_directories(src PUBLIC glfw/include/GLFW/)
+target_include_directories(imgui PUBLIC glfw/include/GLFW/)
 add_subdirectory(glfw/) # библиотека с загрузкой окна
-target_link_libraries(src glfw ${GLFW_LIBRARIES})
-
-find_package(OpenGL REQUIRED)
-target_link_libraries(${PROJECT_NAME} OpenGL::GL)
+target_link_libraries(imgui PUBLIC glfw ${GLFW_LIBRARIES})
+target_link_libraries(src PUBLIC glfw ${GLFW_LIBRARIES})

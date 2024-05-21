@@ -20,8 +20,8 @@ namespace Utils {
 		void DoPortionCalc(MyGui::Mark* mark);
 
 		// FILENAME POINTS TO PNG FILE;; for quite big files I can use async either threading
-		void SaveInfo(const std::string& filename, MyGui::MarkContainer& marks);
-		void LoadInfo(const std::string& filename);
+		void SaveInfo(const std::string& filename, const std::string& pngname, MyGui::MarkContainer& marks);
+		MyGui::MarkContainer LoadInfo(const std::string& filename, std::string& out_pngname);
 		
 		inline void Add(MyGui::AbstractFrame* frame, WindowType type) { m_balls.push_back({frame, type}); }
 		
