@@ -3,6 +3,7 @@
 #include <window.hpp>
 #include <base.hpp>
 
+#include <fstream>
 #include <algorithm>
 
 namespace Utils {
@@ -38,4 +39,47 @@ namespace Utils {
 			}
 		}
 	}
+
+	void Marble::SaveInfo(const std::string& filename, MyGui::MarkContainer& marks)
+	{
+		SIMPLE_LOG_INFO("Filename " + filename);
+		
+		std::ofstream out("HELLO_ME_HERE.info", std::ios::trunc);
+
+		std::string print = "";
+	    for (auto& mark : marks.GetVector()) {
+			print += "{ ";
+			print += mark.GetLabel();
+			print += ", ";
+			print += std::to_string(mark.GetPos().x);
+			print += ", ";
+			print += std::to_string(mark.GetPos().y);
+			for (auto& info : mark.GetBriefCase().vec_info) {
+			    print += ", { ";
+				print += info.name;
+				print += ", ";
+				print += info.isBig ? "1" : "0";
+				print += ", ";
+				print += info.descr;
+				print += " }";
+			}
+			print += " }; "; // { label, x, y };
+		} // need to add some more info to save
+
+		out << print + "\n";
+
+		std::fstream png(filename);
+
+		out << png.rdbuf(); // copying photo to store it within one file
+	}
+
+	void Marble::LoadInfo(const std::string& filename)
+    {
+		// { [label], [x], [y], { [name], [is big], [descr]}, [same structs]...}; <-- reached the end of one mark
+		std::fstream in(filename);
+
+		
+		
+	}
+	
 }

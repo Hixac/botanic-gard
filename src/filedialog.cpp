@@ -10,7 +10,7 @@ namespace Utils {
 	
 	FileDialog::Path FileDialog::Open(nfdfilteritem_t filterItem)
 	{
-	    nfdu8char_t* path; // nfdu8char_t*& outPath
+	    nfdu8char_t* path = new char[1024];
 		auto res = NFD::OpenDialog(path, &filterItem, 1);
 
 		Error err;

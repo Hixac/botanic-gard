@@ -12,16 +12,18 @@ namespace MyGui {
 	{
 	public:
 		Mark(std::string label, ImVec2 pos);
-
+		
 		void UpdateFun();
 	    bool Update();
 
+		inline bool ToDestroy() { return m_pbriefcase->ToDestroy(); }
 		inline bool IsHovered() { return m_isHovered; };
 		inline MyGui::BriefCase& GetBriefCase() { return *m_pbriefcase; }
+
+		inline std::string GetLabel() { return m_label; }
+		inline ImVec2 GetPos() { return m_pos; }
 		
 	private:
-		
-		std::string name;
 		
 		bool m_isHovered;
 		

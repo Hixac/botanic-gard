@@ -6,8 +6,9 @@ namespace MyGui {
 
 	void Image::SetupTexture(const char *filename)
 	{
+		m_filename = filename;
 		m_texture.CreateTexture(filename);
-
+		
 		m_size = GetTextureSize();
 		m_isSetuped = true;
 	}

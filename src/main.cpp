@@ -1,4 +1,3 @@
-#include "imgui.h"
 #include <window.hpp>
 
 #include <frame.hpp>
@@ -42,16 +41,42 @@ int main(void)
 				}
 			}
 			ImGui::Separator();
+			if (ImGui::MenuItem("Сохранить метки") && image.IsSetuped()) { // image.IsSetuped very important to use!
+				Utils::Marble::Get().SaveInfo(image.GetFilename(), marks);
+			}
+			ImGui::Separator();
+            // we load not only marks but also and a photo within one file!
+			// not probably fastest solution but very comfy to do it ig.
+			if (ImGui::MenuItem("Загрузить материал")) { 
+				auto path = Utils::FileDialog::Get().Open({"Информационная единица", "info"});
+
+				if (path.err == Utils::FileDialog::None) {
+					Utils::Marble::Get().LoadInfo(path.out);
+				} else {
+					// TODO: MAKE NOTIFY
+				}
+			}
+			ImGui::Separator();
 			
 			ImGui::EndMenuBar();
 		}
 
 		// PLACE ABOVE MARK FACTORY BECAUSE IT PROC THEIR CLICK
-		for (auto& mark : marks()) {
-		    if (mark.Update()) {
-				SIMPLE_LOG_INFO("Marked!");
-				marked = marked ? nullptr : &mark; // good way to make turns, lol!
+		for (int i = 0; i < marks.GetSize(); ++i) {
+			
+		    if (marks[i].ToDestroy()) { // DO NOT NEED BUT IT MAY BE USEFUL IN FUTURE SO I DON'T REMOVE IT
+				SIMPLE_LOG_INFO("Destroyed!");
+				marks(i);
+				marked = nullptr;
+				
+			    continue;
 			}
+
+			if (marks[i].Update()) {
+				SIMPLE_LOG_INFO("Marked!");
+				marked = marked ? nullptr : &marks[i]; // good way to make turns, lol!
+			}
+			
 		}
 		
 		// PLEASE DON'T CREATE MORE MARKS
@@ -64,12 +89,15 @@ int main(void)
 	});
 	
 	win.OnUpdateCallBack([&]() {
-		if (marked)
+
+	    if (marked) {	 
 			marked->UpdateFun();
+		}
 		
 		image_loop->Update();
 
-		Utils::Marble::Get().DoPortionCalc(marked); // Do the check if marked has been clicked
+		Utils::Marble::Get().DoPortionCalc(marked);
+		
 	});
 	
 	return 0; // Программа закрыта без ошибок
