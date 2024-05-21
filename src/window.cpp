@@ -28,7 +28,7 @@ namespace Window {
 		// Сделать окно видимым поверх всех
 		glfwMakeContextCurrent(m_pwindow);
 		glfwSwapInterval(1); // vsync
-		glfwSetWindowSizeLimits(m_pwindow, 800, 800, GLFW_DONT_CARE, GLFW_DONT_CARE);
+		glfwSetWindowSizeLimits(m_pwindow, 500, 300, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
 		glfwSetMouseButtonCallback(m_pwindow, Window::ButtonCallBack);
 		glfwSetCursorPosCallback(m_pwindow, Window::MousePosCallBack);

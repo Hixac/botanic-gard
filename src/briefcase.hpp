@@ -8,15 +8,15 @@
 
 namespace MyGui {
 
+	struct Info
+	{
+		std::string name;
+		std::string descr;
+		bool isBig;
+	};
+
 	class BriefCase : public AbstractFrame
 	{
-		struct Info
-		{
-			std::string name;
-			std::string descr;
-			bool isBig;
-		};
-		
 	public:
 		BriefCase(const char* label, ImVec2 size, ImVec2 pos, ImGuiWindowFlags flags = 0);
 

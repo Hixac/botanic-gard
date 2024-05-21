@@ -1,14 +1,22 @@
 #include <image.hpp>
 
+#if defined(_WIN32)
+#define GL_CLAMP_TO_EDGE 0x812F 
+#define STBI_WINDOWS_UTF8
+#endif
+
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+
+#include <gl/GL.h>
+
 #include <cassert>
 
 namespace Utils {
 
 	void ImageTexture::CreateTexture(const char* filename)
 	{
-    	unsigned char* image_data = stbi_load(filename, &m_width, &m_height, NULL, 4);
+		unsigned char* image_data = stbi_load(filename, &m_width, &m_height, NULL, 4);
 		if (image_data == NULL)
 		    assert(false && "can not read data from file!");
 

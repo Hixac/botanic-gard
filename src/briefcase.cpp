@@ -17,7 +17,7 @@ namespace MyGui {
 	void BriefCase::Update()
 	{
 	    Utils::FileDialog::Path path = {
-			.out = "ass.jpg",
+			.out = (nfdu8char_t*)"ass.jpg",
 			.err = Utils::FileDialog::None
 		};
 		
