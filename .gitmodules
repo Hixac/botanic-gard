@@ -1,7 +1,7 @@
 [submodule "glfw"]
-	path = glfw/
-	url = https://github.com/glfw/glfw.git
+	path = glfw
+	url = https://github.com/glfw/glfw
 [submodule "nativefiledialog-extended"]
-	path = nativefiledialog-extended/
-	url = https://github.com/btzy/nativefiledialog-extended.git
+	path = nativefiledialog-extended
+	url = https://github.com/btzy/nativefiledialog-extended
 
