@@ -4,7 +4,7 @@ namespace MyGui {
 	
 	void MarkContainer::Add(ImVec2 pos)
 	{
-		Mark mark(std::to_string(m_marks.size() + 1), pos); // fix me
+		Mark mark(std::to_string(m_marks.size() + 1), pos);
 		m_marks.push_back(std::move(mark));
 	}
 

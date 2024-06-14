@@ -11,37 +11,34 @@ namespace Utils {
 	
 	void Marble::DoPortionCalc(MyGui::Mark* mark)
 	{
-		RAW_LOG_INFO(NC_TR_LOG("Frames pointer", 15) << NC_TR_LOG("Enum state", 1));
-		for (int i = 0; i < m_balls.size(); ++i) {
-			POINTER_LOG_INFO(m_balls[i].first, (int)m_balls[i].second, 5);
-			if (!m_balls[i].first) m_balls.erase(m_balls.begin() + i);
-		}
-
-		static float briefcase_size = 500;
 		if (mark == nullptr) { // restore all the shit that I made (im so sorry for this)
 			auto it = std::find_if(m_balls.begin(), m_balls.end(), [](std::pair<MyGui::AbstractFrame*, WindowType>& item) {
 				return item.second == Utils::WindowType::Frame;
 			});
 			it->first->SetPos({0, 0});
 			it->first->SetSize(Window::Window::GetVec());
+
+			m_briefcase_size_x = 0;
 			
 			return;
-		} else {
-			briefcase_size = std::clamp<float>(mark->GetBriefCase().GetWindowSize().x, 500, 800);
-				
-		    mark->GetBriefCase().SetPos({0, 0});
-		    mark->GetBriefCase().SetSize({briefcase_size, static_cast<float>(Window::Window::GetHeight())});
 		}
+		
+		m_is_acivated_briefcase = true;
+		
+	    m_briefcase_size_x = std::clamp<float>(mark->GetBriefCase().GetWindowSize().x, 500, 800);
+				
+		mark->GetBriefCase().SetPos({0, 0});
+		mark->GetBriefCase().SetSize({m_briefcase_size_x, static_cast<float>(Window::Window::GetHeight())});
 		
 		for (auto& ball : m_balls) {
 			if (ball.second == WindowType::Frame) {
-				ball.first->SetPos({briefcase_size, 0});
-				ball.first->SetSize({static_cast<float>(Window::Window::GetWidth()) - briefcase_size, static_cast<float>(Window::Window::GetHeight())});
+				ball.first->SetPos({m_briefcase_size_x, 0});
+				ball.first->SetSize({static_cast<float>(Window::Window::GetWidth()) - m_briefcase_size_x, static_cast<float>(Window::Window::GetHeight())});
 			}
 		}
 	}
 
-	void Marble::SaveInfo(const std::string& filename, const std::string& pngname, MyGui::MarkContainer& marks)
+	void Marble::SaveInfo(const std::string& filename, MyGui::Image& image, MyGui::MarkContainer& marks)
 	{
 		SIMPLE_LOG_INFO("Filename " + filename);
 		
@@ -52,15 +49,20 @@ namespace Utils {
 		std::ofstream out(filename, std::ios::trunc);
 #endif
 
+		ImVec2 cur_pos = image.GetCursorPos();
 
+		RAW_LOG_INFO("File is saving!");
+		RAW_LOG_INFO("Current cursor position: " << std::to_string(cur_pos.x) << ", " << std::to_string(cur_pos.y));
+		
 		std::string print = "";
 	    for (auto& mark : marks.GetVector()) {
+			ImVec2 rel_pos = {(mark.GetPos().x - std::abs(cur_pos.x))/image.GetTexture().GetWidth(), (mark.GetPos().y - std::abs(cur_pos.y))/image.GetTexture().GetHeight()};
 			print += "{";
 			print += mark.GetLabel();
 			print += ",";
-			print += std::to_string(mark.GetPos().x);
+		    print += std::to_string(rel_pos.x);
 			print += ",";
-			print += std::to_string(mark.GetPos().y);
+			print += std::to_string(rel_pos.y);
 			print += ",";
 			print += mark.GetBriefCase().name;
 			print += ",";
@@ -74,32 +76,61 @@ namespace Utils {
 				print += info.isBig ? "1" : "0";
 				print += "}";
 			}
-			print += "};"; // {[label],[x],[y],[name],{[name],[descr],[is big]},[same structs]...};
+			print += "};"; // {[label],[x <- : (0; 1)],[y <- : (0; 1)],[name],{[name],[descr],[is big]},[same structs]...};
 		}
 
-		out << print + "\n";
-		out << pngname;
+		out << print << "\n";
+#if defined(_WIN32)
+		std::wstring wpname = s2ws(image.GetFilename());
+		std::ifstream png(wpname, std::ios::binary);
+#else
+		std::ifstream png(image.GetFilename(), std::ios::binary);
+#endif
+	    assert(png && "File didn't opened");
 
-//#if defined(_WIN32)
-//		std::wstring wfname = s2ws(filename);
-//		std::fstream png(wfname);
-//#else
-//		std::fstream png(filename);
-//#endif
-//		if (!png.is_open()) assert(false && "File doesn't opened");
-//
-//		out << png.rdbuf(); // copying photo to store it within one file
+		out << png.rdbuf(); // copying photo to store it within one file
+		
+		out.close();
+		png.close();
 	}
 
-	MyGui::MarkContainer Marble::LoadInfo(const std::string& filename, std::string& out_pngname)
+	MyGui::MarkContainer Marble::LoadInfo(const std::string& filename, MyGui::Image& image)
     {
+
+		std::ofstream out("./out.png", std::ios::binary);
+		
+#if defined(_WIN32)
+		std::wstring wfname = s2ws(filename, std::ios::binary);
+		std::ifstream png(wfname);
+#else
+		std::ifstream png(filename, std::ios::binary);
+#endif
+		assert(png && "File doesn't found");
+		std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(png), {});
+
+		int slice;
+		for (int i = 0; i < buffer.size(); ++i) {
+			if (buffer[i] == '\n') {
+				slice = i + 1;
+				break;
+			}
+		}
+
+		buffer.erase(buffer.begin(), buffer.begin() + slice);
+		std::copy(buffer.begin(), buffer.end(), std::ostreambuf_iterator<char>(out));
+
+		out.close();
+		png.close();
+		
+		image.SetupTexture("./out.png");
+		
 #if defined(_WIN32)
 		std::wstring wfname = s2ws(filename);
-		std::fstream in(wfname);
+		std::ifstream in(wfname);
 #else
-		std::fstream in(filename);
+		std::ifstream in(filename);
 #endif
-		if (!in.is_open()) assert(false && "File doesn't opened");
+	    assert(in.is_open() && "File doesn't opened");
 
 		std::string line;
 		std::string text;
@@ -107,7 +138,8 @@ namespace Utils {
 		std::getline(in, line); // get the marks
 		
 		int count = 0;
-
+		ImVec2 cur_pos = image.GetCursorPos();
+		
 		std::string label = "";
 		ImVec2 pos;
 		std::string name = "";
@@ -183,7 +215,9 @@ namespace Utils {
 				i += 1;
 			} continue;
 			case ';': {
-				marks.Add(label, pos, name, fname, vec_info);
+				marks.Add(label, {pos.x * image.GetTexture().GetWidth() + std::abs(cur_pos.x), pos.y * image.GetTexture().GetHeight() + std::abs(cur_pos.y)}, name, fname, vec_info);
+				RAW_LOG_INFO("Added new mark, pos: " << std::to_string(pos.x) << ", " << std::to_string(pos.y) << "; " << std::endl							 << "name: " << name << " file: " << fname);
+					
 				count = 0;
 
 				label.clear();
@@ -196,8 +230,6 @@ namespace Utils {
 			}
 		}
 		
-		std::getline(in, out_pngname); // get the png
-
 		return marks;
 	}
 	

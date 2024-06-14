@@ -18,8 +18,8 @@ namespace MyGui {
 		inline void SetCursorPos(ImVec2 pos) { m_cursor_pos = pos; }
 
 		// May be dangerous because of needing of setuping
+		inline Utils::ImageTexture& GetTexture() { return m_texture; }
 		inline ImVec2 GetCursorPos() { return m_cursor_pos; }
-		inline ImVec2 GetTextureSize() { return m_texture.GetVec(); }
 		
 		inline const std::string& GetFilename() { return m_filename; }
 		

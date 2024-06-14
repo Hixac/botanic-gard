@@ -6,6 +6,7 @@
 #include <marble.hpp>
 
 #include <cassert>
+#include <base.hpp>
 
 namespace Window {
 
@@ -77,8 +78,19 @@ namespace Window {
 
 			glfwSwapBuffers(m_pwindow);
 
-			// CLEAR STUFF
-			ms_leftmousedown = false;
+			// SIMPLE_LOG_INFO("Mouse infos: lbp " + std::to_string(ms_leftmousepress) +
+			// 				" rbp " + std::to_string(ms_rightmousepress) +
+			// 				" lbr " + std::to_string(ms_leftmouserelease) +
+			// 				" rbr " + std::to_string(ms_rightmouserelease) +
+			// 				" lbap " + std::to_string(ms_leftmouseabspress) +
+			// 				" rbap " + std::to_string(ms_rightmouseabspress) +
+			// 				" lbar " + std::to_string(ms_rightmouseabsrelease) +
+			// 				" rbar " + std::to_string(ms_rightmouseabsrelease));
+
+			ms_leftmousepress = false;
+			ms_rightmousepress = false;
+			ms_leftmouserelease = false;
+			ms_rightmouserelease = false;
 		}
 	}
 
@@ -90,12 +102,40 @@ namespace Window {
 	void Window::ButtonCallBack(GLFWwindow* window, int button, int action, int mods)
 	{
 		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-			ms_leftmousedown = true;
+			ms_leftmouserelease = false;
+			ms_leftmouseabsrelease = false;
+			ms_leftmousepress = true;
+			ms_leftmouseabspress = true;
+			SIMPLE_LOG_INFO("Left mouse is pressed!");
+		}
+
+		if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+			ms_rightmouserelease = false;
+			ms_rightmouseabsrelease = false;
+			ms_rightmousepress = true;
+			ms_rightmouseabspress = true;
+			SIMPLE_LOG_INFO("Right mouse is pressed!");
+		}
+		
+		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
+			ms_leftmouseabsrelease = true;
+			ms_leftmouserelease = true;
+			ms_leftmousepress = false;
+			ms_leftmouseabspress = false;
+			SIMPLE_LOG_INFO("Left mouse is released!");
+		}
+		
+		if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
+			ms_rightmouseabsrelease = true;
+			ms_rightmouserelease = true;
+			ms_rightmousepress = false;
+			ms_rightmouseabspress = false;
+			SIMPLE_LOG_INFO("Right mouse is released!");
 		}
 	}
 	
 	void Window::MousePosCallBack(GLFWwindow* window, double xpos, double ypos)
 	{
-		m_xpos = xpos; m_ypos = ypos;
+		ms_xpos = xpos; ms_ypos = ypos;
 	}
 }

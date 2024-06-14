@@ -2,13 +2,15 @@
 
 #if defined(_WIN32)
 #define GL_CLAMP_TO_EDGE 0x812F 
+#include <gl/GL.h>
+
 #define STBI_WINDOWS_UTF8
+#else
+#include <GL/gl.h>
 #endif
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
-
-#include <gl/GL.h>
 
 #include <cassert>
 
@@ -34,8 +36,10 @@ namespace Utils {
 #if defined(GL_UNPACK_ROW_LENGTH) && !defined(__EMSCRIPTEN__)
 		glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 #endif
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+					 image_data);
+
 		stbi_image_free(image_data);
-	}	
-	
+	}
+
 }

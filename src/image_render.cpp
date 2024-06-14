@@ -2,14 +2,19 @@
 
 #include <window.hpp>
 
+#include <base.hpp>
+
 namespace MyGui {
 
 	void Image::SetupTexture(const char *filename)
 	{
 		m_filename = filename;
 		m_texture.CreateTexture(filename);
+
+		SIMPLE_LOG_INFO("File named " + std::string(filename) + " has initialized!");
+		SIMPLE_LOG_INFO("With size: " + std::to_string(m_texture.GetWidth()) + "x" + std::to_string(m_texture.GetHeight()));
 		
-		m_size = GetTextureSize();
+		m_size = m_texture.GetVec();
 		m_isSetuped = true;
 	}
 

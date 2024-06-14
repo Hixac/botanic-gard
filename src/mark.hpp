@@ -22,6 +22,8 @@ namespace MyGui {
 
 		inline std::string GetLabel() { return m_label; }
 		inline ImVec2 GetPos() { return m_pos; }
+
+		inline void SetPos(ImVec2 pos) { m_pos = pos; }
 		
 	private:
 		

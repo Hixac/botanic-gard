@@ -11,10 +11,12 @@ namespace MyGui {
 		: m_label(label), m_oldres(Window::Window::GetVec()), m_pos(pos), m_isHovered(false),
 		  m_pbriefcase(new BriefCase("herro", {0, 0}, {0, 0}))
 	{ }
-
+	
     bool Mark::Update()
 	{
-		ImGui::SetCursorPos({m_pos.x * Window::Window::GetVec().x / m_oldres.x, m_pos.y * Window::Window::GetVec().y / m_oldres.y});
+		ImVec2 dres = { ImGui::GetWindowSize().x  - m_oldres.x, ImGui::GetWindowSize().y - m_oldres.y };
+		ImGui::SetCursorPos({ dres.x/2  + m_pos.x, dres.y/2 + m_pos.y});
+		
 		if (ImGui::Button(m_label.c_str())) {
 		    m_isHovered = true;
 
