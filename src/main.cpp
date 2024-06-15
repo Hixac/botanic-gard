@@ -51,10 +51,6 @@ int main(void)
 			
 			sum_mouse_pos = { sum_mouse_pos.x + delta_mouse_pos.x, sum_mouse_pos.y + delta_mouse_pos.y };
 
-			// marks.ForAll([&](MyGui::Mark& m) {
-			// 	m.SetPos({m.GetPos().x - delta_mouse_pos.x, m.GetPos().y - delta_mouse_pos.y});
-			// });
-
 			SIMPLE_LOG_INFO("Mouse position: " + std::to_string(buffer_mouse_pos.x) + ", " + std::to_string(buffer_mouse_pos.y));
 		}
 
@@ -63,13 +59,6 @@ int main(void)
 			
 			scale = std::clamp<float>(std::abs(scale - scroll_y / ImGui::GetWindowHeight()), 0.0615, 10);
 			image.SetSize({image.GetTexture().GetWidth() * scale, image.GetTexture().GetHeight() * scale});
-			
-			// marks.ForAll([&](MyGui::Mark& m) {
-			// 	auto abs_pos = m.GetAbsPos(image);
-			// 	auto image_size = image.GetSize();
-			// 	auto image_cur = image.GetCursorPos();
-			// 	m.SetPos({abs_pos.x * image_size.x + image_cur.x, abs_pos.y * image_size.y + image_cur.y});
-			// });
 			
 			SIMPLE_LOG_INFO("Scaling: " + std::to_string(scale));
 		}
@@ -118,10 +107,6 @@ int main(void)
 			ImGui::Separator();
 			
 			ImGui::EndMenuBar();
-		}
-
-		if (ImGui::RadioButton("Поиск", true)) {
-			
 		}
 		
 		// PLACE ABOVE MARK FACTORY BECAUSE IT PROC THEIR CLICK
