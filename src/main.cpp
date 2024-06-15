@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <window.hpp>
 
 #include <frame.hpp>
@@ -15,8 +16,8 @@ int main(void)
 	MyGui::Image image;
 	
 	std::unique_ptr<MyGui::Frame> image_loop(new MyGui::Frame("ImageRender", win.GetVec(), {0, 0},
-						ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_MenuBar
-															  | ImGuiWindowFlags_HorizontalScrollbar));
+						ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_MenuBar |
+												 ImGuiWindowFlags_NoScrollbar));
 
     MyGui::Mark* marked = nullptr;
 	MyGui::MarkContainer marks;
@@ -24,18 +25,55 @@ int main(void)
 	ImVec2 buffer_mouse_pos;
 	ImVec2 delta_mouse_pos;
 	ImVec2 sum_mouse_pos;
+
+	float scale = 1;
+
+	std::vector<ImVec2> vec_abs_pos;
 	
 	image_loop->SetFunction([&](){
+
+		vec_abs_pos.clear();
+		marks.ForAll([&](auto& m) {
+			vec_abs_pos.push_back(m.GetAbsPos(image));
+		});
 		
-		ImVec2 image_pos = {ImGui::GetWindowSize().x / 2 - image.GetTexture().GetVec().x / 2 - sum_mouse_pos.x,
-			ImGui::GetWindowSize().y / 2 - image.GetTexture().GetVec().y / 2 - sum_mouse_pos.y}; // TODO: MAKE IT NOT FLY OUT WHEN PRESS
-	
+		float image_x = (ImGui::GetWindowSize().x - image.GetTexture().GetVec().x) > 0 ?
+			(ImGui::GetWindowSize().x - image.GetTexture().GetVec().x) * 0.5f : 0;
+		
+		float image_y = (ImGui::GetWindowSize().y - image.GetTexture().GetVec().y) > 0 ?
+			(ImGui::GetWindowSize().y - image.GetTexture().GetVec().y) * 0.5f : 30;
+		
+		ImVec2 image_pos = { image_x - sum_mouse_pos.x, image_y - sum_mouse_pos.y};
+		
 		if (Window::Window::GetRightMouseAbsPress()) {
-		    delta_mouse_pos = { Window::Window::GetMousePosition().x - buffer_mouse_pos.x, Window::Window::GetMousePosition().y - buffer_mouse_pos.y};
+		    delta_mouse_pos = { Window::Window::GetMousePosition().x - buffer_mouse_pos.x,
+				Window::Window::GetMousePosition().y - buffer_mouse_pos.y};
 			
-			sum_mouse_pos = {sum_mouse_pos.x + delta_mouse_pos.x, sum_mouse_pos.y + delta_mouse_pos.y };
+			sum_mouse_pos = { sum_mouse_pos.x + delta_mouse_pos.x, sum_mouse_pos.y + delta_mouse_pos.y };
+
+			// marks.ForAll([&](MyGui::Mark& m) {
+			// 	m.SetPos({m.GetPos().x - delta_mouse_pos.x, m.GetPos().y - delta_mouse_pos.y});
+			// });
+
+			SIMPLE_LOG_INFO("Mouse position: " + std::to_string(buffer_mouse_pos.x) + ", " + std::to_string(buffer_mouse_pos.y));
 		}
-		
+
+		if (Window::Window::GetLeftControlPress()) {
+			float scroll_y = Window::Window::GetScrollOffset().y * 50;
+			
+			scale = std::clamp<float>(std::abs(scale - scroll_y / ImGui::GetWindowHeight()), 0.0615, 10);
+			image.SetSize({image.GetTexture().GetWidth() * scale, image.GetTexture().GetHeight() * scale});
+			
+			// marks.ForAll([&](MyGui::Mark& m) {
+			// 	auto abs_pos = m.GetAbsPos(image);
+			// 	auto image_size = image.GetSize();
+			// 	auto image_cur = image.GetCursorPos();
+			// 	m.SetPos({abs_pos.x * image_size.x + image_cur.x, abs_pos.y * image_size.y + image_cur.y});
+			// });
+			
+			SIMPLE_LOG_INFO("Scaling: " + std::to_string(scale));
+		}
+
 		if (image.IsSetuped()) {
 			image.SetCursorPos(image_pos);
 			image.Update();
@@ -46,6 +84,7 @@ int main(void)
 				auto path = Utils::FileDialog::Get().Open();
 
 				if (path.err == Utils::FileDialog::None) {
+					sum_mouse_pos = {0, 0};
 					image.SetupTexture(path.out);
 					marks.Clear();
 				} else {
@@ -81,6 +120,10 @@ int main(void)
 			ImGui::EndMenuBar();
 		}
 
+		if (ImGui::RadioButton("Поиск", true)) {
+			
+		}
+		
 		// PLACE ABOVE MARK FACTORY BECAUSE IT PROC THEIR CLICK
 		for (int i = 0; i < marks.GetSize(); ++i) {
 			
@@ -96,8 +139,7 @@ int main(void)
 				marked = marked ? nullptr : &marks[i]; // good way to make turns, lol!
 			}
 
-			marks[i].SetPos({marks[i].GetPos().x - delta_mouse_pos.x, marks[i].GetPos().y - delta_mouse_pos.y});
-			
+			marks[i].SetPos({vec_abs_pos[i].x * image.GetSize().x + image.GetCursorPos().x, vec_abs_pos[i].y * image.GetSize().y + image.GetCursorPos().y});
 		}
 		
 		// PLEASE DON'T CREATE MORE MARKS

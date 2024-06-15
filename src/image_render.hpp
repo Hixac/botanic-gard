@@ -20,6 +20,8 @@ namespace MyGui {
 		// May be dangerous because of needing of setuping
 		inline Utils::ImageTexture& GetTexture() { return m_texture; }
 		inline ImVec2 GetCursorPos() { return m_cursor_pos; }
+
+		inline ImVec2 GetSize() { return m_size; }
 		
 		inline const std::string& GetFilename() { return m_filename; }
 		

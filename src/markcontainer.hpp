@@ -16,6 +16,8 @@ namespace MyGui {
 		void Add(std::string label, ImVec2 pos, std::string name, std::string filename, std::vector<MyGui::Info> vec_info);
 
 		bool Any(Mark* mark = nullptr);
+
+		void ForAll(std::function<void(Mark&)> fn);
 		
 		inline void Clear() { m_marks.clear(); }
 		

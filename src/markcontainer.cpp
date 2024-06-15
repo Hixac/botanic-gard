@@ -28,5 +28,12 @@ namespace MyGui {
 
 		return false;
 	}
+
+	void MarkContainer::ForAll(std::function<void(Mark&)> fn)
+	{
+		for (auto& m : m_marks) {
+			fn(m);
+		}
+	}
 	
 }

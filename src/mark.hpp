@@ -22,7 +22,9 @@ namespace MyGui {
 
 		inline std::string GetLabel() { return m_label; }
 		inline ImVec2 GetPos() { return m_pos; }
-
+		
+		inline ImVec2 GetAbsPos(Image image) { return { (m_pos.x - image.GetCursorPos().x) / image.GetSize().x, (m_pos.y - image.GetCursorPos().y) / image.GetSize().y }; }
+		
 		inline void SetPos(ImVec2 pos) { m_pos = pos; }
 		
 	private:

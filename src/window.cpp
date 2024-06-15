@@ -33,6 +33,8 @@ namespace Window {
 
 		glfwSetMouseButtonCallback(m_pwindow, Window::ButtonCallBack);
 		glfwSetCursorPosCallback(m_pwindow, Window::MousePosCallBack);
+		glfwSetScrollCallback(m_pwindow, Window::ScrollCallBack);
+		glfwSetKeyCallback(m_pwindow, Window::KeyCallBack);
 		
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
@@ -91,6 +93,8 @@ namespace Window {
 			ms_rightmousepress = false;
 			ms_leftmouserelease = false;
 			ms_rightmouserelease = false;
+
+			ms_scrollxpos = 0; ms_scrollypos = 0;
 		}
 	}
 
@@ -137,5 +141,19 @@ namespace Window {
 	void Window::MousePosCallBack(GLFWwindow* window, double xpos, double ypos)
 	{
 		ms_xpos = xpos; ms_ypos = ypos;
+	}
+
+	void Window::ScrollCallBack(GLFWwindow* window, double xpos, double ypos)
+	{
+		ms_scrollxpos = xpos; ms_scrollypos = ypos;
+	}
+
+	void Window::KeyCallBack(GLFWwindow* window, int key, int scancode, int action, int mods)
+	{
+		if (key == GLFW_KEY_LEFT_CONTROL && action == GLFW_PRESS) {
+			ms_leftcontrol = true;
+		} else {
+			ms_leftcontrol = false;
+		}
 	}
 }

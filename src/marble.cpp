@@ -48,7 +48,7 @@ namespace Utils {
 #else
 		std::ofstream out(filename, std::ios::trunc);
 #endif
-
+		
 		ImVec2 cur_pos = image.GetCursorPos();
 
 		RAW_LOG_INFO("File is saving!");
@@ -56,7 +56,7 @@ namespace Utils {
 		
 		std::string print = "";
 	    for (auto& mark : marks.GetVector()) {
-			ImVec2 rel_pos = {(mark.GetPos().x - std::abs(cur_pos.x))/image.GetTexture().GetWidth(), (mark.GetPos().y - std::abs(cur_pos.y))/image.GetTexture().GetHeight()};
+			ImVec2 rel_pos = {(mark.GetPos().x - cur_pos.x)/image.GetTexture().GetWidth(), (mark.GetPos().y - cur_pos.y)/image.GetTexture().GetHeight()};
 			print += "{";
 			print += mark.GetLabel();
 			print += ",";
@@ -215,7 +215,7 @@ namespace Utils {
 				i += 1;
 			} continue;
 			case ';': {
-				marks.Add(label, {pos.x * image.GetTexture().GetWidth() + std::abs(cur_pos.x), pos.y * image.GetTexture().GetHeight() + std::abs(cur_pos.y)}, name, fname, vec_info);
+				marks.Add(label, {pos.x * image.GetTexture().GetWidth() + cur_pos.x, pos.y * image.GetTexture().GetHeight() + cur_pos.y}, name, fname, vec_info);
 				RAW_LOG_INFO("Added new mark, pos: " << std::to_string(pos.x) << ", " << std::to_string(pos.y) << "; " << std::endl							 << "name: " << name << " file: " << fname);
 					
 				count = 0;

@@ -25,6 +25,7 @@ namespace Window {
 		std::vector<std::function<void()>> updatefns;
 
 		inline static ImVec2 GetMousePosition() { return {static_cast<float>(ms_xpos), static_cast<float>(ms_ypos)}; }
+		inline static ImVec2 GetScrollOffset() { return {static_cast<float>(ms_scrollxpos), static_cast<float>(ms_scrollypos)}; }
 		
 		inline static bool GetLeftMousePress() { return ms_leftmousepress; }
 		inline static bool GetRightMousePress() { return ms_rightmousepress; }
@@ -35,6 +36,8 @@ namespace Window {
 		inline static bool GetLeftMouseAbsRelease() { return ms_leftmouserelease; }
 		inline static bool GetRightMouseAbsRelease() { return ms_rightmouserelease; }
 		
+		inline static bool GetLeftControlPress() { return ms_leftcontrol; }
+		
 	private:
 
 		inline static void SetHeight(int height) { ms_height = height; }
@@ -43,6 +46,8 @@ namespace Window {
 		static void ErrorCallBack(int code, const char* descr);
 		static void ButtonCallBack(GLFWwindow* window, int button, int action, int mods);
 		static void MousePosCallBack(GLFWwindow* window, double xpos, double ypos);
+		static void ScrollCallBack(GLFWwindow* window, double xpos, double ypos);
+		static void KeyCallBack(GLFWwindow* window, int key, int scancode, int action, int mods);
 		
 		inline static bool ms_leftmousepress = false;
 		inline static bool ms_rightmousepress = false;
@@ -52,7 +57,11 @@ namespace Window {
 		inline static bool ms_rightmouserelease = false;
 		inline static bool ms_leftmouseabsrelease = false;
 		inline static bool ms_rightmouseabsrelease = false;
+		
+		inline static bool ms_leftcontrol = false;
+		
 		inline static double ms_xpos, ms_ypos;
+		inline static double ms_scrollxpos, ms_scrollypos;
 		
 		GLFWwindow* m_pwindow;
 		
