@@ -14,8 +14,7 @@ namespace MyGui {
 	
     bool Mark::Update()
 	{
-		ImVec2 dres = { ImGui::GetWindowSize().x  - m_oldres.x, ImGui::GetWindowSize().y - m_oldres.y };
-		ImGui::SetCursorPos({ dres.x/2  + m_pos.x, dres.y/2 + m_pos.y});
+		ImGui::SetCursorPos({ m_pos.x, m_pos.y});
 		
 		if (ImGui::Button(m_label.c_str())) {
 		    m_isHovered = true;
