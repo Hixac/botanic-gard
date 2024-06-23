@@ -17,7 +17,7 @@ namespace Utils {
 	public:		
 		inline static Marble& Get() { static Marble m; return m; }
 
-		void DoPortionCalc(MyGui::Mark* mark);
+		void DoPortionCalc();
 
 		// FILENAME POINTS TO PNG FILE;; for quite big files I can use async either threading
 		void SaveInfo(const std::string& filename, MyGui::Image& image, MyGui::MarkContainer& marks);

@@ -9,9 +9,10 @@
 
 namespace Utils {
 	
-	void Marble::DoPortionCalc(MyGui::Mark* mark)
+	void Marble::DoPortionCalc()
 	{
-		if (mark == nullptr) { // restore all the shit that I made (im so sorry for this)
+	    MyGui::BriefCase* briefcase = MyGui::BriefCase::GetActivation();
+		if (briefcase == nullptr) { // restore all the shit that I made (im so sorry for this)
 			auto it = std::find_if(m_balls.begin(), m_balls.end(), [](std::pair<MyGui::AbstractFrame*, WindowType>& item) {
 				return item.second == Utils::WindowType::Frame;
 			});
@@ -25,10 +26,10 @@ namespace Utils {
 		
 		m_is_acivated_briefcase = true;
 		
-	    m_briefcase_size_x = std::clamp<float>(mark->GetBriefCase().GetWindowSize().x, 500, 800);
+	    m_briefcase_size_x = std::clamp<float>(briefcase->GetWindowSize().x, 500, 800);
 				
-		mark->GetBriefCase().SetPos({0, 0});
-		mark->GetBriefCase().SetSize({m_briefcase_size_x, static_cast<float>(Window::Window::GetHeight())});
+	    briefcase->SetPos({0, 0});
+	    briefcase->SetSize({m_briefcase_size_x, static_cast<float>(Window::Window::GetHeight())});
 		
 		for (auto& ball : m_balls) {
 			if (ball.second == WindowType::Frame) {

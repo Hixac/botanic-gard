@@ -12,6 +12,7 @@ namespace MyGui {
 		: AbstractFrame(label, size, pos, flags), m_destroy(false)
 	{
 		Utils::Marble::Get().Add(this, Utils::WindowType::Briefcase);
+		name = "Безымянный " + std::string(label);
 	}
 	
 	void BriefCase::Update()

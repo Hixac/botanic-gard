@@ -19,6 +19,9 @@ FILE(COPY res/ass.jpg DESTINATION "${CMAKE_BINARY_DIR}/")
 FILE(COPY res/ass.jpg DESTINATION "${CMAKE_BINARY_DIR}/Debug")
 FILE(COPY res/JetBrainsMonoNLNerdFontMono-Regular.ttf DESTINATION "${CMAKE_BINARY_DIR}")
 FILE(COPY res/JetBrainsMonoNLNerdFontMono-Regular.ttf DESTINATION "${CMAKE_BINARY_DIR}/Debug")
+FILE(COPY res/lupa.png DESTINATION "${CMAKE_BINARY_DIR}")
+FILE(COPY res/lupa.png DESTINATION "${CMAKE_BINARY_DIR}/Debug")
+
 
 add_executable(${PROJECT_NAME} src/main.cpp)
 

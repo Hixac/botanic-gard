@@ -21,9 +21,11 @@ namespace MyGui {
 		BriefCase(const char* label, ImVec2 size, ImVec2 pos, ImGuiWindowFlags flags = 0);
 
 	    void Update() override;
-		inline void SetActive(bool active) { m_active = active; }
-		inline bool IsActive() { return m_active; }
 
+	    void Activate() { activated_bc = this; }
+		static BriefCase* GetActivation() { return activated_bc; }
+		static void Disactivate() { activated_bc = nullptr; }
+		
 		inline bool ToDestroy() { return m_destroy; }
 
 		// incapsulation violation (ikr idgaf)
@@ -32,6 +34,8 @@ namespace MyGui {
 	    Image image;
 
 	private:
+		inline static BriefCase* activated_bc = nullptr;
+		
 		bool m_active;
 		bool m_destroy;
 		

@@ -42,6 +42,9 @@ namespace Window {
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controlss
 
 		io.Fonts->AddFontFromFileTTF("JetBrainsMonoNLNerdFontMono-Regular.ttf", 23, nullptr, io.Fonts->GetGlyphRangesCyrillic());
+
+		ImGuiStyle& style = ImGui::GetStyle(); 
+		style.FrameRounding = 10.f;
 		
 		ImGui::StyleColorsDark();
 	    ImGui_ImplGlfw_InitForOpenGL(m_pwindow, true);

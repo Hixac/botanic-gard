@@ -17,6 +17,8 @@ namespace MyGui {
 		inline ImVec2 GetPos()  const { return m_pos;  }
 
 		inline ImVec2 GetWindowSize() const { return m_winsize; }
+
+		inline bool IsWindowHovered() const { return m_is_hovered; }
 		
     protected:
 
@@ -25,11 +27,13 @@ namespace MyGui {
 		ImVec2 m_pos;
 		ImVec2 m_size;
 		ImVec2 m_winsize;
+
+		bool m_is_hovered;
 		
 		ImGuiWindowFlags m_flags;
 
 		AbstractFrame(const char* label, ImVec2 size, ImVec2 pos, ImGuiWindowFlags flags = 0)
-			: m_label(label), m_size(size), m_pos(pos), m_flags(flags)
+			: m_label(label), m_size(size), m_pos(pos), m_flags(flags), m_is_hovered(false)
 		{ }
 		virtual ~AbstractFrame() = default;
 		
@@ -38,12 +42,14 @@ namespace MyGui {
 	class Frame : public AbstractFrame
 	{
 	public:
-		Frame(const char* label, ImVec2 size, ImVec2 pos, ImGuiWindowFlags flags = 0);
+		Frame(const char* label, ImVec2 size, ImVec2 pos, ImGuiWindowFlags flags = 0, bool marble_add = true);
 		
 		void Update() override;
 		inline void SetFunction(std::function<void()> fn) { m_fn = fn; }
 
 	private:
+		bool m_child;
+		
 		std::function<void()> m_fn;
 	};
 	

@@ -1,6 +1,8 @@
-#include <algorithm>
 #include <window.hpp>
 
+#include <imgui_stdlib.h>
+
+#include <mygui.hpp>
 #include <frame.hpp>
 #include <filedialog.hpp>
 #include <mark.hpp>
@@ -9,17 +11,20 @@
 
 #include <base.hpp>
 
+#include <algorithm>
+
 int main(void)
 {
 	Window::Window win("Фруктовый сад", 1600, 800);
 
 	MyGui::Image image;
+	Utils::ImageTexture button_image;
+	button_image.CreateTexture("lupa.png");
 	
-	std::unique_ptr<MyGui::Frame> image_loop(new MyGui::Frame("ImageRender", win.GetVec(), {0, 0},
-						ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_MenuBar |
-												 ImGuiWindowFlags_NoScrollbar));
+	std::unique_ptr<MyGui::Frame> image_loop(new MyGui::Frame("ImageRender", win.GetVec(), {0, 0}, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoScrollbar));
 
-    MyGui::Mark* marked = nullptr;
+	std::unique_ptr<MyGui::Frame> search_loop(new MyGui::Frame("SearchRoom", {300, 300}, {float(win.GetWidth() - 375), 85}, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar, false));
+	
 	MyGui::MarkContainer marks;
 
 	ImVec2 buffer_mouse_pos;
@@ -29,6 +34,12 @@ int main(void)
 	float scale = 1;
 
 	std::vector<ImVec2> vec_abs_pos;
+
+	std::string search_name = "";
+	bool search_menu = false;
+	bool is_rb_pressed = false;
+	
+    MyGui::SetUpdateForSearch(search_loop, marks);
 	
 	image_loop->SetFunction([&](){
 
@@ -105,6 +116,30 @@ int main(void)
 				}
 			}
 			ImGui::Separator();
+			if (ImGui::MenuItem("Поиск")) {
+				ImGui::InputText("ключевое слово", &search_name);
+
+				std::vector<std::string> vec_names;
+				for (auto& m : marks.GetVector()) {
+					vec_names.push_back(m.GetBriefCase().name);
+				}
+
+				static int value = 0;
+				static std::string preview_name = vec_names.empty() ? "Ничего" : vec_names[value];
+				
+				if (ImGui::BeginCombo("Items", preview_name.c_str())) {
+					for (size_t i = 0; i < vec_names.size(); i++) {
+						const bool is_selected = (value == i);
+						if (ImGui::Selectable(vec_names[i].c_str(), is_selected))
+							value = i;
+				
+						if (is_selected)
+							ImGui::SetItemDefaultFocus();
+					}
+					ImGui::EndCombo();
+				}
+			}
+			ImGui::Separator();
 			
 			ImGui::EndMenuBar();
 		}
@@ -115,41 +150,60 @@ int main(void)
 		    if (marks[i].ToDestroy()) { // DO NOT NEED BUT IT MAY BE USEFUL IN FUTURE SO I DON'T REMOVE IT
 				SIMPLE_LOG_INFO("Destroyed!");
 				marks(i);
-				marked = nullptr;
+				vec_abs_pos.erase(vec_abs_pos.begin() + i);
+				MyGui::BriefCase::Disactivate();
 				
 			    continue;
 			}
 
-			if (marks[i].Update()) {
-				marked = marked ? nullptr : &marks[i]; // good way to make turns, lol!
-			}
+			marks[i].Update();
 
 			marks[i].SetPos({vec_abs_pos[i].x * image.GetSize().x + image.GetCursorPos().x, vec_abs_pos[i].y * image.GetSize().y + image.GetCursorPos().y});
 		}
 		
 		// PLEASE DON'T CREATE MORE MARKS
-		if (Window::Window::GetLeftMouseRelease() && !marked && image.IsHovering() && !marks.Any()) {
+		if (Window::Window::GetLeftMouseRelease() && !MyGui::BriefCase::GetActivation() && image.IsHovering() && !marks.Any()) {
 			ImVec2 pos = {Window::Window::GetMousePosition().x - 10 + ImGui::GetScrollX(), Window::Window::GetMousePosition().y - 15 + ImGui::GetScrollY()};
 			marks.Add(pos);
 		    RAW_LOG_INFO("Added mark with pos: " << std::to_string(pos.x) << ", " << std::to_string(pos.y));
 			
-		} else if (Window::Window::GetLeftMouseRelease() && ImGui::IsWindowHovered() && marked && !marks.Any()) {
-			marked = nullptr; // remove marked; better to remove this unintuitive shit
+		} else if (Window::Window::GetLeftMouseRelease() && ImGui::IsWindowHovered() && MyGui::BriefCase::GetActivation() && !marks.Any()) {
+			MyGui::BriefCase::Disactivate();
 		}
 
+		if (search_menu) {
+			ImGui::SetNextWindowBgAlpha(1);
+		    search_loop->Update();
+		}	    
+
+		ImVec2 temp_cur = ImGui::GetCursorPos();
+		ImGui::SetCursorPos({ImGui::GetWindowSize().x - 125 + Utils::Marble::Get().BriefcaseSize(), 50});
+	    if (MyGui::RoundButton("Button", button_image)) {
+			search_menu = !search_menu;
+			is_rb_pressed = true;
+		}
+		ImGui::SetCursorPos(temp_cur);
+		
+		if (!is_rb_pressed && !search_loop->IsWindowHovered() && Window::Window::GetLeftMouseRelease()) {
+	        search_menu = false;
+	    }
+
+		is_rb_pressed = false;
 		buffer_mouse_pos = { Window::Window::GetMousePosition().x, Window::Window::GetMousePosition().y };
-		delta_mouse_pos = {0, 0};
+		delta_mouse_pos  = {0, 0};
 	});
 	
 	win.OnUpdateCallBack([&]() {
 
-	    if (marked) {	 
-			marked->UpdateFun();
-		}
+		search_loop->SetPos({float(win.GetWidth() - 375), 85});
 		
-		image_loop->Update();
+	    if (MyGui::BriefCase::GetActivation()) {
+			MyGui::BriefCase::GetActivation()->Update();
+		}
 
-		Utils::Marble::Get().DoPortionCalc(marked);
+		image_loop->Update();
+		
+		Utils::Marble::Get().DoPortionCalc();
 		
 	});
 	

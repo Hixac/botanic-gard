@@ -9,5 +9,6 @@ add_library(src STATIC
   image_render.hpp      image_render.cpp
   briefcase.hpp         briefcase.cpp
   marble.hpp            marble.cpp
+  mygui.hpp
   base.hpp
 )

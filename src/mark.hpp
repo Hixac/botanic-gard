@@ -14,7 +14,7 @@ namespace MyGui {
 		Mark(std::string label, ImVec2 pos);
 		
 		void UpdateFun();
-	    bool Update();
+	    void Update();
 
 		inline bool ToDestroy() { return m_pbriefcase->ToDestroy(); }
 		inline bool IsHovered() { return m_isHovered; };
