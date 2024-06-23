@@ -37,6 +37,7 @@ namespace Window {
 		inline static bool GetRightMouseAbsRelease() { return ms_rightmouserelease; }
 		
 		inline static bool GetLeftControlPress() { return ms_leftcontrol; }
+		inline static bool GetLCVPress() { return ms_leftcontrol && ms_v; }
 		
 	private:
 
@@ -59,6 +60,7 @@ namespace Window {
 		inline static bool ms_rightmouseabsrelease = false;
 		
 		inline static bool ms_leftcontrol = false;
+		inline static bool ms_v = false;
 		
 		inline static double ms_xpos, ms_ypos;
 		inline static double ms_scrollxpos, ms_scrollypos;

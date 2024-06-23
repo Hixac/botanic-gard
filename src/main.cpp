@@ -38,6 +38,11 @@ int main(void)
 	std::string search_name = "";
 	bool search_menu = false;
 	bool is_rb_pressed = false;
+
+	bool save_flag = false;
+	ImVec2 first_pos;
+	ImVec2 buffer_pos;
+	ImVec2 last_pos;
 	
     MyGui::SetUpdateForSearch(search_loop, marks);
 	
@@ -73,7 +78,7 @@ int main(void)
 			
 			SIMPLE_LOG_INFO("Scaling: " + std::to_string(scale));
 		}
-
+		
 		if (image.IsSetuped()) {
 			image.SetCursorPos(image_pos);
 			image.Update();
@@ -162,7 +167,8 @@ int main(void)
 		}
 		
 		// PLEASE DON'T CREATE MORE MARKS
-		if (Window::Window::GetLeftMouseRelease() && !MyGui::BriefCase::GetActivation() && image.IsHovering() && !marks.Any()) {
+		if (Window::Window::GetLeftMouseRelease() && !MyGui::BriefCase::GetActivation() && image.IsHovering() && !marks.Any()
+			&& !MyGui::CheckDrawRectTimer()) {
 			ImVec2 pos = {Window::Window::GetMousePosition().x - 10 + ImGui::GetScrollX(), Window::Window::GetMousePosition().y - 15 + ImGui::GetScrollY()};
 			marks.Add(pos);
 		    RAW_LOG_INFO("Added mark with pos: " << std::to_string(pos.x) << ", " << std::to_string(pos.y));
@@ -188,6 +194,50 @@ int main(void)
 	        search_menu = false;
 	    }
 
+		if (ImGui::BeginPopup("Действия"))
+		{
+		    if (ImGui::Button("Копировать")) {
+				MyGui::CopyMarks(first_pos, last_pos, marks, image.GetCursorPos());
+				ImGui::CloseCurrentPopup();	
+			}
+			if (ImGui::Button("Удалить")) {
+				MyGui::EraseMarks(first_pos, last_pos, marks);
+				ImGui::CloseCurrentPopup();
+			}
+            ImGui::EndPopup();
+        }
+
+		if (Window::Window::GetLCVPress()) {
+		    for (int i = 0; i < MyGui::copy_marks.GetSize(); ++i) {
+				auto& mark = MyGui::copy_marks[i];
+				ImVec2 mouse_pos = Window::Window::GetMousePosition();
+				ImVec2 abs_pos = mark.GetAbsPos(image);
+				ImVec2 pos = { mouse_pos.x + mark.GetPos().x, mouse_pos.y + mark.GetPos().y };
+				marks.Add(mark, pos);
+			}
+		}
+		
+		if (Window::Window::GetLeftMouseAbsPress()) {
+			if (!save_flag) {
+				MyGui::StartDrawRectTimer(0.5);
+			    buffer_pos = Window::Window::GetMousePosition();
+				save_flag = true;
+				SIMPLE_LOG_INFO("Start drawing at " + std::to_string(buffer_pos.x) + ", " + std::to_string(buffer_pos.y));
+			}
+			MyGui::DrawRectangle(buffer_pos);
+		}
+
+		if (Window::Window::GetLeftMouseRelease()) {
+			if (save_flag && MyGui::CheckDrawRectTimer()) {
+				first_pos = buffer_pos;
+				last_pos = Window::Window::GetMousePosition();
+
+				SIMPLE_LOG_INFO("Timer start drawing at " + std::to_string(first_pos.x) + ", " + std::to_string(first_pos.y));
+				ImGui::OpenPopup("Действия");
+			}
+			save_flag = false;
+		}
+		
 		is_rb_pressed = false;
 		buffer_mouse_pos = { Window::Window::GetMousePosition().x, Window::Window::GetMousePosition().y };
 		delta_mouse_pos  = {0, 0};

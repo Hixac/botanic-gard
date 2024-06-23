@@ -19,6 +19,7 @@ namespace MyGui {
 		inline bool ToDestroy() { return m_pbriefcase->ToDestroy(); }
 		inline bool IsHovered() { return m_isHovered; };
 		inline MyGui::BriefCase& GetBriefCase() { return *m_pbriefcase; }
+		inline std::shared_ptr<MyGui::BriefCase>& GetBCPtr() { return m_pbriefcase; }
 
 		inline std::string GetLabel() { return m_label; }
 		inline ImVec2 GetPos() { return m_pos; }
@@ -31,7 +32,7 @@ namespace MyGui {
 		
 		bool m_isHovered;
 		
-		std::unique_ptr<MyGui::BriefCase> m_pbriefcase;
+		std::shared_ptr<MyGui::BriefCase> m_pbriefcase;
 		
 		std::string m_label;
 		ImVec2 m_pos;

@@ -19,8 +19,10 @@ namespace Utils {
 	void ImageTexture::CreateTexture(const char* filename)
 	{
 		unsigned char* image_data = stbi_load(filename, &m_width, &m_height, NULL, 4);
-		if (image_data == NULL)
-		    assert(false && "can not read data from file!");
+		if (image_data == NULL) {
+			image_data = stbi_load("ass.jpg", &m_width, &m_height, NULL, 4);
+		    assert(image_data && "Something really broken!");
+		}
 
 		// Create a OpenGL texture identifier
 		glGenTextures(1, &m_texture);

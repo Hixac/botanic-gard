@@ -25,7 +25,8 @@ namespace MyGui {
 	    void Activate() { activated_bc = this; }
 		static BriefCase* GetActivation() { return activated_bc; }
 		static void Disactivate() { activated_bc = nullptr; }
-		
+
+		inline void Destroy() { m_destroy = true; }
 		inline bool ToDestroy() { return m_destroy; }
 
 		// incapsulation violation (ikr idgaf)

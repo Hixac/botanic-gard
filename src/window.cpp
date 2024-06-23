@@ -98,6 +98,8 @@ namespace Window {
 			ms_rightmouserelease = false;
 
 			ms_scrollxpos = 0; ms_scrollypos = 0;
+
+			ms_v = false;
 		}
 	}
 
@@ -155,8 +157,11 @@ namespace Window {
 	{
 		if (key == GLFW_KEY_LEFT_CONTROL && action == GLFW_PRESS) {
 			ms_leftcontrol = true;
+		} else if (key == GLFW_KEY_V && action == GLFW_PRESS) {
+			ms_v = true;
 		} else {
 			ms_leftcontrol = false;
+			ms_v = false;
 		}
 	}
 }

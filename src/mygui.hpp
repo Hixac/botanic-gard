@@ -9,6 +9,7 @@
 #include <marble.hpp>
 #include <image.hpp>
 #include <markcontainer.hpp>
+#include <window.hpp>
 
 #include <memory>
 
@@ -52,6 +53,49 @@ namespace MyGui {
 				}
 			}
 		});
+	}
+
+	static void DrawRectangle(ImVec2 first_pos)
+	{
+		ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+		ImVec2 pos = Window::Window::GetMousePosition();
+
+		draw_list->AddRectFilled(first_pos, pos, ImGui::GetColorU32({0, 0, 0, 0.5}));
+	}
+
+	// Why not class? :| :PP
+	inline static float first_time = 0;
+	inline static bool timer_started = false;
+	static void StartDrawRectTimer(float time)
+	{
+	    first_time = ImGui::GetTime() + time;
+		timer_started = true;
+	}
+
+	[[nodiscard]] static bool CheckDrawRectTimer()
+	{
+		return timer_started ? ImGui::GetTime() > first_time : false;
+	}
+	
+	static void EraseMarks(ImVec2 first, ImVec2 last, MyGui::MarkContainer& marks)
+	{
+		for (int i = 0; i < marks.GetSize(); ++i) {
+		    ImVec2 pos = marks[i].GetPos();
+			if (first.x < pos.x && last.x > pos.x && first.y < pos.y && last.y > pos.y)
+			    marks[i].GetBriefCase().Destroy();
+		}
+	}
+
+	inline static MyGui::MarkContainer copy_marks;
+	static void CopyMarks(ImVec2 first, ImVec2 last, MyGui::MarkContainer& marks, ImVec2 offset)
+	{
+		copy_marks.Clear();
+		for (int i = 0; i < marks.GetSize(); ++i) {
+		    ImVec2 pos = marks[i].GetPos();
+			if (first.x < pos.x && last.x > pos.x && first.y < pos.y && last.y > pos.y)
+			    copy_marks.Add(marks[i], {pos.x - first.x, pos.y - first.y});
+		}
 	}
 	
 }

@@ -8,6 +8,20 @@ namespace MyGui {
 		m_marks.push_back(std::move(mark));
 	}
 
+	void MarkContainer::Add(Mark& m)
+	{
+		Mark mark(std::to_string(m_marks.size() + 1 + m_deletes), m.GetPos());
+	    mark.GetBCPtr() = std::make_shared<BriefCase>(*m.GetBCPtr());
+		m_marks.push_back(std::move(mark));
+	}
+
+	void MarkContainer::Add(Mark& m, ImVec2 pos)
+	{
+		Mark mark(std::to_string(m_marks.size() + 1 + m_deletes), pos);
+	    mark.GetBCPtr() = std::make_shared<BriefCase>(*m.GetBCPtr());
+		m_marks.push_back(std::move(mark));
+	}
+	
 	void MarkContainer::Add(std::string label, ImVec2 pos, std::string name, std::string filename, std::vector<MyGui::Info> vec_info)
 	{
 		Mark mark(label, pos);
