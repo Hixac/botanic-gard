@@ -84,25 +84,27 @@ namespace Utils {
 #if defined(_WIN32)
 		std::wstring wpname = s2ws(image.GetFilename());
 		std::ifstream png(wpname, std::ios::binary);
+
+		out.close();
+		std::ofstream out1(wfilename, std::ios::binary | std::ios::app);
 #else
 		std::ifstream png(image.GetFilename(), std::ios::binary);
 #endif
 	    assert(png && "File didn't opened");
 
-		out << png.rdbuf(); // copying photo to store it within one file
+		out1 << png.rdbuf(); // copying photo to store it within one file
 		
-		out.close();
+		out1.close();
 		png.close();
 	}
 
 	MyGui::MarkContainer Marble::LoadInfo(const std::string& filename, MyGui::Image& image)
     {
-
 		std::ofstream out("./out.png", std::ios::binary);
 		
 #if defined(_WIN32)
-		std::wstring wfname = s2ws(filename, std::ios::binary);
-		std::ifstream png(wfname);
+		std::wstring wfname = s2ws(filename);
+		std::ifstream png(wfname, std::ios::binary);
 #else
 		std::ifstream png(filename, std::ios::binary);
 #endif
@@ -126,7 +128,6 @@ namespace Utils {
 		image.SetupTexture("./out.png");
 		
 #if defined(_WIN32)
-		std::wstring wfname = s2ws(filename);
 		std::ifstream in(wfname);
 #else
 		std::ifstream in(filename);
