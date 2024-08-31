@@ -8,6 +8,7 @@
 #include <mark.hpp>
 #include <markcontainer.hpp>
 #include <marble.hpp>
+#include <windows_utils.hpp>
 
 #include <base.hpp>
 
@@ -18,11 +19,11 @@ int main(void)
 	Window::Window win("Фруктовый сад", 1600, 800);
 
 	MyGui::Image image;
+
 	Utils::ImageTexture button_image;
 	button_image.CreateTexture("lupa.png");
 	
 	std::unique_ptr<MyGui::Frame> image_loop(new MyGui::Frame("ImageRender", win.GetVec(), {0, 0}, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoScrollbar));
-
 	std::unique_ptr<MyGui::Frame> search_loop(new MyGui::Frame("SearchRoom", {300, 300}, {float(win.GetWidth() - 375), 85}, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar, false));
 	
 	MyGui::MarkContainer marks;
@@ -45,6 +46,9 @@ int main(void)
 	ImVec2 last_pos;
 	
     MyGui::SetUpdateForSearch(search_loop, marks);
+
+	std::string path = Utils::GetStateWindows();
+	marks = Utils::Marble::Get().LoadInfo(path, image);
 	
 	image_loop->SetFunction([&](){
 
@@ -102,6 +106,7 @@ int main(void)
 
 				if (path.err == Utils::FileDialog::None) {
 					Utils::Marble::Get().SaveInfo(path.out, image, marks);
+					Utils::SaveStateWindows(path.out);
 				}
 				else {
 					// TODO: MAKE NOTIFY
@@ -110,38 +115,14 @@ int main(void)
 			ImGui::Separator();
             // we load not only marks but also and a photo within one file!
 			// not probably fastest solution but very comfy to do it ig.
-			if (ImGui::MenuItem("Загрузить материал")) { 
+			if (ImGui::MenuItem("Загрузить материал")) {
 				auto path = Utils::FileDialog::Get().Open({"Информационная единица", "info"});
 
 				if (path.err == Utils::FileDialog::None) {
 					marks = Utils::Marble::Get().LoadInfo(path.out, image);
-
+					Utils::SaveStateWindows(path.out);
 				} else {
 					// TODO: MAKE NOTIFY
-				}
-			}
-			ImGui::Separator();
-			if (ImGui::MenuItem("Поиск")) {
-				ImGui::InputText("ключевое слово", &search_name);
-
-				std::vector<std::string> vec_names;
-				for (auto& m : marks.GetVector()) {
-					vec_names.push_back(m.GetBriefCase().name);
-				}
-
-				static int value = 0;
-				static std::string preview_name = vec_names.empty() ? "Ничего" : vec_names[value];
-				
-				if (ImGui::BeginCombo("Items", preview_name.c_str())) {
-					for (size_t i = 0; i < vec_names.size(); i++) {
-						const bool is_selected = (value == i);
-						if (ImGui::Selectable(vec_names[i].c_str(), is_selected))
-							value = i;
-				
-						if (is_selected)
-							ImGui::SetItemDefaultFocus();
-					}
-					ImGui::EndCombo();
 				}
 			}
 			ImGui::Separator();
@@ -163,7 +144,7 @@ int main(void)
 
 			marks[i].Update();
 
-			marks[i].SetPos({vec_abs_pos[i].x * image.GetSize().x + image.GetCursorPos().x, vec_abs_pos[i].y * image.GetSize().y + image.GetCursorPos().y});
+			if (!vec_abs_pos.empty()) marks[i].SetPos({vec_abs_pos[i].x * image.GetSize().x + image.GetCursorPos().x, vec_abs_pos[i].y * image.GetSize().y + image.GetCursorPos().y});
 		}
 		
 		// PLEASE DON'T CREATE MORE MARKS

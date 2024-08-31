@@ -10,5 +10,6 @@ add_library(src STATIC
   briefcase.hpp         briefcase.cpp
   marble.hpp            marble.cpp
   mygui.hpp
+  windows_utils.hpp
   base.hpp
 )
